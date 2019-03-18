@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jianghongbo.dao.UserDao">
+
+    <resultMap id="user" type="com.jianghongbo.entity.User">
+        <result column="id" jdbcType="VARCHAR" property="id" />
+        <result column="userName" jdbcType="VARCHAR" property="userName" />
+        <result column="password" jdbcType="VARCHAR" property="passWord" />
+    </resultMap>
+
+    <sql id="pageLimit" >
+        limit 0, 10
+    </sql>
+    <select id="getUserList" resultMap="user" parameterType="user" >
+        select id,userName,password from testUser.user
+        <include refid="pageLimit" />
+    </select>
+
+</mapper>

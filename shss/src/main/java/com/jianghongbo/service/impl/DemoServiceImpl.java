@@ -1,6 +1,7 @@
 package com.jianghongbo.service.impl;
 
 import com.jianghongbo.service.api.DemoServiceApi;
+import org.springframework.stereotype.Service;
 
 /**
  * @ClassName: DemoServiceImpl.java
@@ -8,6 +9,7 @@ import com.jianghongbo.service.api.DemoServiceApi;
  * @author: jianghb
  * @date: 2019年2月19日
  */
+@Service
 public class DemoServiceImpl implements DemoServiceApi {
 
 	@Override

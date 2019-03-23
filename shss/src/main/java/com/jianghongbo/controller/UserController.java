@@ -1,5 +1,6 @@
 package com.jianghongbo.controller;
 
+import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.entity.User;
 import com.jianghongbo.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/firstView")
-    public List<User> firstView(String id){
+    public JsonResult firstView(String id){
+    	JsonResult result = new JsonResult();
         User user = new User();
         user.setId(id);
         List<User> userList = userService.getUserList(user);
-        return userList;
+        result.setData(userList);
+        return result;
     }
 
 }

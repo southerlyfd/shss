@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.service.api.DemoServiceApi;
 
 /**
@@ -20,8 +21,10 @@ public class DemoController {
 	private DemoServiceApi DemoServiceApi;
 	
 	@RequestMapping(value = "/test")
-	public String test(String token) {
-		
-		return "SUCCESS" + (token == null ? "" : token);
+	public JsonResult test(String token) {
+		JsonResult result = new JsonResult();
+		Integer i = DemoServiceApi.testServiceApi(2);
+		result.setData("SUCCESS" + (token == null ? "" : token + i));
+		return result;
 	}
 }

@@ -12,7 +12,7 @@
         limit 0, 10
     </sql>
     <select id="getUserList" resultMap="user" parameterType="user" >
-        select id,userName,password from user
+        select id,userName,password from user_info
         <include refid="pageLimit" />
     </select>
 

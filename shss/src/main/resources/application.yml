@@ -11,8 +11,8 @@ mybatis:
 ###配置打印sql
 logging:
   level:
-    com.jianghongbo: DEBUG //包路径为mapper文件包路径
-    org.springframework.boot.autoconfigure: ERROR 
+    com.jianghongbo: DEBUG #包路径为mapper文件包路径
+    org.springframework.boot.autoconfigure: INFO
 ---
 
 #开发配置

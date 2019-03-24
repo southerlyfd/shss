@@ -4,16 +4,49 @@
 
     <resultMap id="user" type="com.jianghongbo.entity.User">
         <result column="id" jdbcType="VARCHAR" property="id" />
-        <result column="userName" jdbcType="VARCHAR" property="userName" />
-        <result column="password" jdbcType="VARCHAR" property="passWord" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="portrait" jdbcType="VARCHAR" property="portrait" />
+        <result column="login_time" jdbcType="VARCHAR" property="login_time" />
     </resultMap>
 
     <sql id="pageLimit" >
         limit 0, 10
     </sql>
+    <!-- 用户信息查询 -->
     <select id="getUserList" resultMap="user" parameterType="user" >
-        select id,userName,password from user_info
+        select * from users where 1=1
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="username != null and username !=''">
+            and username = #{username}
+        </if>
         <include refid="pageLimit" />
     </select>
-
+    <!-- 用户注册 -->
+    <insert id="registerUserInfo" parameterType="user" >
+        insert into users (username, password, portrait) values (#{username}, #{password}, #{portrait})
+    </insert>
+    <!-- 用户信息修改 -->
+    <update id="updateUserInfo" parameterType="user" >
+        update users set
+        <if test="username != null and username !=''">
+            username = #{username}
+        </if>
+        <if test="password != null and password !=''">
+            password = #{password}
+        </if>
+        <if test="portrait != null and portrait !=''">
+            portrait = #{portrait}
+        </if>
+        <if test="login_time != null and login_time !=''">
+            login_time = now()
+        </if>
+        where id = #{id}
+    </update>
+    <!-- 注销用户 -->
+    <delete id="deleteUserInfo" parameterType="user" >
+        delete from users where id = #{id}
+    </delete>
 </mapper>

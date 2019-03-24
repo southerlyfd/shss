@@ -9,6 +9,22 @@ import java.util.List;
 @Repository
 public interface UserDao {
 
+    /**
+     * 用户信息查询
+     * @param user
+     * @return
+     */
     List<User> getUserList(User user);
+
+    /**
+     * 用户注册
+     * @param user
+     */
+    void registerUserInfo(User user);
+    /**
+     * 用户信息修改
+     * @param user
+     */
+    void updateUserInfo(User user);
 
 }

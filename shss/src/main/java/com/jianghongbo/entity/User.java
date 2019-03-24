@@ -56,4 +56,15 @@ public class User {
     public void setLogin_time(String login_time) {
         this.login_time = login_time;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", portrait='" + portrait + '\'' +
+                ", login_time='" + login_time + '\'' +
+                '}';
+    }
 }

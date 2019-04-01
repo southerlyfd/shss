@@ -14,11 +14,18 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * 用户信息查询
+     * 用户列表查询
      * @param user
      * @return
      */
     List<User> getUserList(User user);
+
+    /**
+     * 用户信息查询
+     * @param user
+     * @return
+     */
+    User getUser(User user);
 
     /**
      * 用户注册

@@ -12,6 +12,10 @@ public class ShssException extends RuntimeException {
         this.msg = msg;
     }
 
+    public ShssException(String msg) {
+        this.msg = msg;
+    }
+
     private String code;
     private String msg;
 

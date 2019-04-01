@@ -31,7 +31,7 @@ public class ShssControllerAdvice {
     }
 
     /**
-     * 拦截捕捉自定义异常 MyException.class
+     * 拦截捕捉自定义异常 ShssException.class
      * @param ex
      * @return
      */

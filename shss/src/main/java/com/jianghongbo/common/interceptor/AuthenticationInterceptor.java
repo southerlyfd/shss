@@ -4,7 +4,9 @@ import com.jianghongbo.common.annotation.PassToken;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.entity.User;
+import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,14 +19,16 @@ import java.lang.reflect.Method;
  * @date ：Created in 2019-03-31 18:03
  * @description：
  */
-
+@Slf4j
 public class AuthenticationInterceptor implements HandlerInterceptor {
+
     @Autowired
-    UserService userService;
+    RedisService redisService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+        String token = httpServletRequest.getHeader("shss_token");// 从 http 请求头中取出 token
+        log.info("token:" + token);
         // 如果不是映射到方法直接通过
         if(!(object instanceof HandlerMethod)){
             return true;
@@ -46,13 +50,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 if (token == null) {
                     throw new ShssException("无token，请重新登录");
                 }
-                User userParam = new User();
-                User user = userService.getUser(userParam);
-                if (user == null) {
-                    throw new ShssException("用户不存在，请重新登录");
-                }
+                String shss_token = redisService.get("shss_token");
                 // 验证 token
-                if (!token.equals(user.getToken())) {
+                if (!token.equals(shss_token)) {
                     throw new ShssException("token已失效，请重新登录");
                 }
                 return true;

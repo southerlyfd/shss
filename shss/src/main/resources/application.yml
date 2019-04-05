@@ -26,3 +26,17 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
+
+---
+
+# redis配置，以下有默认配置的也可以使用默认配置
+spring:
+redis:
+  host: 127.0.0.1
+  port: 6379
+  pool:
+    max-active: 8
+    max-wait: 1
+    max-idle: 8
+    min-idle: 0
+  timeout: 0

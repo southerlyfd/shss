@@ -1,6 +1,5 @@
 package com.jianghongbo.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jianghongbo.common.JsonResult;
@@ -8,6 +7,7 @@ import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.entity.User;
+import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
 import com.jianghongbo.service.impl.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -38,12 +34,16 @@ public class UserController {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    RedisService redisService;
+
 
     /**
      * 用户列表查询
      * @param userParam
      * @return
      */
+    @UserLoginToken
     @RequestMapping("/queryUserList")
     public JsonResult queryUserList(User userParam){
         JsonResult result = new JsonResult();
@@ -59,7 +59,6 @@ public class UserController {
      * @param userParam
      * @return
      */
-    //@UserLoginToken
     @RequestMapping("/queryUser")
     public JsonResult queryUser(User userParam){
     	JsonResult result = new JsonResult();
@@ -108,10 +107,11 @@ public class UserController {
                 login_user.setId(id);
                 login_user.setLogin_time("now");
                 String token = tokenService.getToken(user);
-                //user.setToken(token);
-                // 修改登陆时间
-                //userService.updateUserInfo(login_user);
-                result.setData(user);
+                login_user.setShss_token(token);
+                // 修改token
+                userService.updateUserInfo(login_user);
+                redisService.set("shss_token", token);
+                result.setData(token);
             }
         } else {
             result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);

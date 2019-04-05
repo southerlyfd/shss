@@ -7,12 +7,13 @@
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="password" jdbcType="VARCHAR" property="password" />
         <result column="portrait" jdbcType="VARCHAR" property="portrait" />
+        <result column="shss_token" jdbcType="VARCHAR" property="shss_token" />
         <result column="login_time" jdbcType="VARCHAR" property="login_time" />
     </resultMap>
 
     <!-- 用户列表查询 -->
     <select id="getUserList" resultMap="user" parameterType="user" >
-        select * from users where 1=1
+        select * from user_info where 1=1
         <if test="id != null and id !=''">
             and id = #{id}
         </if>
@@ -22,7 +23,7 @@
     </select>
     <!-- 用户信息查询 -->
     <select id="getUser" resultMap="user" parameterType="user" >
-        select * from users where 1=1
+        select * from user_info where 1=1
         <if test="id != null and id !=''">
             and id = #{id}
         </if>
@@ -32,31 +33,23 @@
     </select>
     <!-- 用户注册 -->
     <insert id="registerUserInfo" parameterType="user" >
-        insert into users (username, password, portrait, login_time)
+        insert into user_info (username, password, portrait, login_time)
         values (#{username}, #{password}, #{portrait}, now())
     </insert>
     <!-- 用户信息修改 -->
     <update id="updateUserInfo" parameterType="user" >
-        update users set
-        <if test="username != null and username !=''">
-            username = #{username}
-        </if>
-        <if test="password != null and password !=''">
-            password = #{password}
-        </if>
-        <if test="portrait != null and portrait !=''">
-            portrait = #{portrait}
-        </if>
-        <!--<if test="token != null and token !=''">
-            token = #{token}
-        </if>-->
-        <if test="login_time != null and login_time !=''">
-            login_time = now()
-        </if>
+        update user_info
+        <trim prefix="set" suffixOverrides=",">
+            <if test="username != null and username !=''"> username = #{username}, </if>
+            <if test="password != null and password !=''"> password = #{password}, </if>
+            <if test="portrait != null and portrait !=''"> portrait = #{portrait}, </if>
+            <if test="shss_token != null and shss_token !=''"> shss_token = #{shss_token}, </if>
+            <if test="login_time != null and login_time !=''"> login_time = now(), </if>
+        </trim>
         where id = #{id}
     </update>
     <!-- 注销用户 -->
     <delete id="deleteUserInfo" parameterType="user" >
-        delete from users where id = #{id}
+        delete from user_info where id = #{id}
     </delete>
 </mapper>

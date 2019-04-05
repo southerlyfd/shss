@@ -19,7 +19,7 @@ public class StringUtil {
 
     public static String getCurrentDateTime() {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDDHHmmssSSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return sdf.format(date);
     }
 

@@ -27,4 +27,11 @@ public class DemoController {
 		result.setData("SUCCESS" + (token == null ? "" : token + i));
 		return result;
 	}
+	
+	@RequestMapping(value = "/test1")
+	public JsonResult test() {
+		JsonResult result = new JsonResult();
+		result.setData("SUCCESS" + "0.0.1");
+		return result;
+	}
 }

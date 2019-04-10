@@ -31,7 +31,7 @@ public class DemoController {
 	@RequestMapping(value = "/test1")
 	public JsonResult test() {
 		JsonResult result = new JsonResult();
-		result.setData("SUCCESS" + "0.0.2");
+		result.setData("SUCCESS" + "0.0.3");
 		return result;
 	}
 }

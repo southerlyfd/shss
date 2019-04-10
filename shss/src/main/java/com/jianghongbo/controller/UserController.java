@@ -15,7 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -111,7 +114,9 @@ public class UserController {
                 // 修改token
                 userService.updateUserInfo(login_user);
                 redisService.set("shss_token", token);
-                result.setData(token);
+                Map<String, String> map = new HashMap<>();
+                map.put("shssToken", token);
+                result.setData(map);
             }
         } else {
             result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);

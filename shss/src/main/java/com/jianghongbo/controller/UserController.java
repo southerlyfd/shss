@@ -2,9 +2,9 @@ package com.jianghongbo.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.util.StringUtil;
 import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.annotation.UserLoginToken;
+import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.entity.UserInfo;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 @Slf4j
-public class UserController extends BaseController {
+public class UserController {
 
     @Autowired
     UserService userService;
@@ -38,8 +38,8 @@ public class UserController extends BaseController {
     @Autowired
     TokenService tokenService;
 
-    @Autowired
-    RedisService redisService;
+    //@Autowired
+    //RedisService redisService;
 
 
     /**
@@ -81,10 +81,10 @@ public class UserController extends BaseController {
         String username = user.getUsername();
         String password = user.getPassword();
         if (StringUtils.isBlank(StringUtils.trim(username))) {
-            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, "username 不能为空");
+            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.USERNAME_NOT_NULL);
         }
         if (StringUtils.isBlank(StringUtils.trim(password))) {
-            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, "password 不能为空");
+            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.PASSWORD_NOT_NULL);
         }
         JsonResult result = new JsonResult();
         userService.registerUserInfo(user);
@@ -100,11 +100,18 @@ public class UserController extends BaseController {
     //@Transactional  //事务回滚
     public JsonResult login(UserInfo userParam){
         JsonResult result = new JsonResult();
+        String username = userParam.getUsername();
+        String password = userParam.getPassword();
+        if (StringUtils.isBlank(StringUtils.trim(username))) {
+            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.USERNAME_NOT_NULL);
+        }
+        if (StringUtils.isBlank(StringUtils.trim(password))) {
+            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.PASSWORD_NOT_NULL);
+        }
         UserInfo user = userService.getUser(userParam);
         if (user != null){
             if (!userParam.getPassword().equals(user.getPassword())) {
-                result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
-                result.setErrMsg("登录失败,密码错误");
+                throw new ShssException(StateCodeConstant.ERROR_PARAM_CODE, CommonConst.PASSWORD_IS_WRONG);
             } else {
                 int id = user.getId();
                 UserInfo login_user = new UserInfo();
@@ -114,14 +121,12 @@ public class UserController extends BaseController {
                 login_user.setShssToken(token);
                 // 修改token
                 userService.updateUserInfo(login_user);
-                redisService.set("shss_token", token);
                 Map<String, String> map = new HashMap<>();
-                map.put("shssToken", token);
+                map.put(CommonConst.SHSS_TOKEN, token);
                 result.setData(map);
             }
         } else {
-            result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
-            result.setErrMsg("登录失败,用户名不存在");
+            throw new ShssException(StateCodeConstant.ERROR_PARAM_CODE, CommonConst.USER_NOT_EXIST);
         }
 
         return result;
@@ -132,23 +137,14 @@ public class UserController extends BaseController {
      * @param shssToken
      * @return
      */
+    @UserLoginToken
     @RequestMapping("/findUserInfo")
     public JsonResult findUserInfo (String shssToken) {
     	JsonResult result = new JsonResult();
     	log.info("shssToken:" + shssToken);
-    	if (!StringUtil.isNotEmpty(shssToken)) {
-    		result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
-            result.setErrMsg("登录失败,用户名不存在");
-            result.setState(false);
-            return result;
-		}
-    	UserInfo user = super.getEffectiveLogin(shssToken);
-    	if (user == null) {
-    		result.setStateCode(StateCodeConstant.ERROR_TOKEN_INVALID);
-            result.setErrMsg("登陆已过期，请重新登录");
-            result.setState(false);
-            return result;
-		}
+        UserInfo userInfo = new UserInfo();
+        userInfo.setShssToken(shssToken);
+    	UserInfo user = userService.getUser(userInfo);
     	Map<String, Object> map = new HashMap<>();
     	map.put("username", user.getUsername());
     	map.put("portrait", user.getPortrait());

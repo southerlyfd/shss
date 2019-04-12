@@ -1,11 +1,16 @@
 package com.jianghongbo.common.exception;
 
+import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.consts.StateCodeConstant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -16,6 +21,9 @@ import java.util.Map;
 @ControllerAdvice
 public class ShssControllerAdvice {
 
+    @Autowired
+    private MessageSource messageSource;
+
     /**
      * 全局异常捕捉处理
      * @param ex
@@ -23,11 +31,12 @@ public class ShssControllerAdvice {
      */
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
-    public Map errorHandler(Exception ex) {
-        Map map = new HashMap();
-        map.put("code", StateCodeConstant.ERROR_CODE);
-        map.put("msg", ex.getMessage());
-        return map;
+    public JsonResult errorHandler(Exception ex) {
+        JsonResult jsonResult = new JsonResult();
+        jsonResult.setStateCode(StateCodeConstant.ERROR_CODE);
+        jsonResult.setErrMsg(ex.getMessage());
+        jsonResult.setState(false);
+        return jsonResult;
     }
 
     /**
@@ -37,11 +46,15 @@ public class ShssControllerAdvice {
      */
     @ResponseBody
     @ExceptionHandler(value = ShssException.class)
-    public Map myErrorHandler(ShssException ex) {
-        Map map = new HashMap();
-        map.put("code", ex.getCode());
-        map.put("msg", ex.getMsg());
-        return map;
+    public JsonResult myErrorHandler(ShssException ex) {
+        JsonResult jsonResult = new JsonResult();
+        jsonResult.setStateCode(ex.getCode());
+        String msg = ex.getMsg();
+        Locale locale = LocaleContextHolder.getLocale();
+        msg =  messageSource.getMessage(msg, null, locale);
+        jsonResult.setErrMsg(msg);
+        jsonResult.setState(false);
+        return jsonResult;
     }
 
 }

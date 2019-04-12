@@ -1,10 +1,11 @@
 package com.jianghongbo.common.interceptor;
 
+import com.jianghongbo.common.ServiceResult;
 import com.jianghongbo.common.annotation.PassToken;
 import com.jianghongbo.common.annotation.UserLoginToken;
+import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.entity.UserInfo;
-import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,12 @@ import java.lang.reflect.Method;
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Autowired
-    RedisService redisService;
+    UserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        String token = httpServletRequest.getHeader("shss_token");// 从 http 请求头中取出 token
-        log.info("token:" + token);
+        String shssToken = httpServletRequest.getHeader(CommonConst.SHSS_TOKEN);// 从 http 请求头中取出 token
+        log.info("shssToken:" + shssToken);
         // 如果不是映射到方法直接通过
         if(!(object instanceof HandlerMethod)){
             return true;
@@ -47,13 +48,17 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
                 // 执行认证
-                if (token == null) {
-                    throw new ShssException("无token，请重新登录");
+                if (shssToken == null) {
+                    throw new ShssException(CommonConst.USER_INVALID);
                 }
-                String shss_token = redisService.get("shss_token");
-                // 验证 token
-                if (!token.equals(shss_token)) {
-                    throw new ShssException("token已失效，请重新登录");
+                ServiceResult<UserInfo> userList = userService.getLoginInfo(shssToken);
+                // 判断登陆有效时间是否已过期
+                if (userList.isOk() && userList.getData() != null) {
+                    UserInfo user = userList.getData();
+                    // 验证 token
+                    if (user == null) {
+                        throw new ShssException(CommonConst.USER_INVALID);
+                    }
                 }
                 return true;
             }

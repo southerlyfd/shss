@@ -1,5 +1,13 @@
 package com.jianghongbo.common.exception;
 
+import com.jianghongbo.common.consts.CommonConst;
+import com.jianghongbo.common.consts.StateCodeConstant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.util.Locale;
+
 /**
  * @author ：taoyl
  * @date ：Created in 2019-03-24 17:39
@@ -16,7 +24,7 @@ public class ShssException extends RuntimeException {
         this.msg = msg;
     }
 
-    private String code;
+    private String code = StateCodeConstant.ERROR_CODE;
     private String msg;
 
     public String getCode() {

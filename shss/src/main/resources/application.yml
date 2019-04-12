@@ -40,3 +40,10 @@ spring:
     max-idle: 8
     min-idle: 0
   timeout: 0
+
+---
+########################### international config ###########################
+spring:
+  messages:
+    encoding: UTF-8
+    basename: messages

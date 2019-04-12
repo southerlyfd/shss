@@ -2,6 +2,7 @@ package com.jianghongbo.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.StateCodeConstant;
@@ -29,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 @Slf4j
-public class UserController {
+public class UserController extends BaseController {
 
     @Autowired
     UserService userService;
@@ -108,9 +109,9 @@ public class UserController {
                 int id = user.getId();
                 User login_user = new User();
                 login_user.setId(id);
-                login_user.setLogin_time("now");
+                login_user.setLoginTime("now");
                 String token = tokenService.getToken(user);
-                login_user.setShss_token(token);
+                login_user.setShssToken(token);
                 // 修改token
                 userService.updateUserInfo(login_user);
                 redisService.set("shss_token", token);
@@ -126,5 +127,36 @@ public class UserController {
         return result;
     }
 
-
+    /**
+     * 获取用户信息
+     * @param shssToken
+     * @return
+     */
+    @RequestMapping("/findUserInfo")
+    public JsonResult findUserInfo (String shssToken) {
+    	JsonResult result = new JsonResult();
+    	log.info("shssToken:" + shssToken);
+    	if (!StringUtil.isNotEmpty(shssToken)) {
+    		result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
+            result.setErrMsg("登录失败,用户名不存在");
+            result.setState(false);
+            return result;
+		}
+    	User user = super.getEffectiveLogin(shssToken);
+    	if (user == null) {
+    		result.setStateCode(StateCodeConstant.ERROR_TOKEN_INVALID);
+            result.setErrMsg("登陆已过期，请重新登录");
+            result.setState(false);
+            return result;
+		}
+    	Map<String, Object> map = new HashMap<>();
+    	map.put("username", user.getUsername());
+    	map.put("portrait", user.getPortrait());
+    	map.put("loginTime", user.getLoginTime());
+    	result.setState(true);
+    	result.setErrMsg("成功");
+    	result.setData(map);
+    	result.setStateCode(StateCodeConstant.SUCCESS_CODE);
+    	return result;
+    }
 }

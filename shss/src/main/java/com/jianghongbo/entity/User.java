@@ -21,9 +21,9 @@ public class User {
     //用户头像
     private String portrait;
     //上次登陆时间
-    private String login_time;
+    private String loginTime;
     //登陆token
-    private String shss_token;
+    private String shssToken;
 
 
 }

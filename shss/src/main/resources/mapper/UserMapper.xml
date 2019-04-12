@@ -7,8 +7,8 @@
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="password" jdbcType="VARCHAR" property="password" />
         <result column="portrait" jdbcType="VARCHAR" property="portrait" />
-        <result column="shss_token" jdbcType="VARCHAR" property="shss_token" />
-        <result column="login_time" jdbcType="VARCHAR" property="login_time" />
+        <result column="shss_token" jdbcType="VARCHAR" property="shssToken" />
+        <result column="login_time" jdbcType="VARCHAR" property="loginTime" />
     </resultMap>
 
     <!-- 用户列表查询 -->
@@ -52,4 +52,17 @@
     <delete id="deleteUserInfo" parameterType="user" >
         delete from user_info where id = #{id}
     </delete>
+    
+    <sql id="Base_Column_List">
+    	ui.username, ui.portrait, ui.login_time
+    </sql>
+    
+    <select id="getUserInfoByToken" parameterType="java.lang.String" resultMap="user">
+    	select 
+			<include refid="Base_Column_List" />
+    	from user_info ui 
+    	where 
+    	ui.shss_token = #{shssToken,jdbcType=VARCHAR}
+    </select>
+    
 </mapper>

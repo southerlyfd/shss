@@ -1,7 +1,7 @@
 package com.jianghongbo.service.api;
 
+import com.jianghongbo.common.ServiceResult;
 import com.jianghongbo.entity.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -38,4 +38,10 @@ public interface UserService {
      */
     void updateUserInfo(User user);
 
+    /**
+     * 获取用户登录信息
+     * @param shssToken
+     * @return
+     */
+    ServiceResult<User> getLoginInfo(String shssToken);
 }

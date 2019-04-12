@@ -34,4 +34,10 @@ public interface UserDao {
      */
     void updateUserInfo(User user);
 
+    /**
+     * 根据shssToken查询用户信息
+     * @param shssToken
+     * @return
+     */
+    List<User> getUserInfoByToken(String shssToken);
 }

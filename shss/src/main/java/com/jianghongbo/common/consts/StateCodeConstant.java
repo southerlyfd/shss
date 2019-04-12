@@ -32,5 +32,10 @@ public class StateCodeConstant {
 	 * 错误状态码
 	 */
 	public static final String ERR_CODE ="0";
+	
+	/**
+	 * token失效
+	 */
+	public static final String ERROR_TOKEN_INVALID = "503";
 
 }

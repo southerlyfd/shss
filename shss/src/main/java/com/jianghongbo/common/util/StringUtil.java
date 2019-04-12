@@ -3,10 +3,15 @@ package com.jianghongbo.common.util;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jianghongbo.common.interceptor.AuthenticationInterceptor;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +23,7 @@ import java.util.Random;
  * @date ：Created in 2019-03-31 18:59
  * @description：
  */
+@Slf4j
 public class StringUtil extends org.springframework.util.StringUtils {
 
     public static boolean isBlank(String str) {
@@ -31,6 +37,35 @@ public class StringUtil extends org.springframework.util.StringUtils {
         return sdf.format(date);
     }
 
+    /**
+     * 校验token是否过期
+     * @param shssToken
+     * @return
+     */
+    public static boolean checkTokenExpiration(String shssToken) {
+    	if (shssToken == null || "".equals(shssToken)) {
+			return false;
+		}
+    	String tokenDataStr = shssToken.split("_")[0]; // 生成token时间
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    	Date tokenDate = null;
+    	try {
+			tokenDate = sdf.parse(tokenDataStr);
+		} catch (ParseException e) {
+			log.info("token值不合法：info");
+			log.debug(("token值不合法：debug"));;
+			e.printStackTrace();
+			return false;
+		}
+    	Calendar c = Calendar.getInstance();
+    	c.setTime(tokenDate);
+    	c.add(Calendar.DAY_OF_MONTH, 70);
+    	if (c.getTime().compareTo(new Date()) >= 0) {
+			return true;
+		}
+    	return false;
+    }
+    
 //    private static final Logger logger = LoggerFactory.getLogger(StringUtils.class);
 
 	/**

@@ -2,11 +2,12 @@ package com.jianghongbo.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.util.StringUtil;
+//import com.github.pagehelper.util.StringUtil;
 import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
@@ -136,9 +137,9 @@ public class UserController extends BaseController {
     public JsonResult findUserInfo (String shssToken) {
     	JsonResult result = new JsonResult();
     	log.info("shssToken:" + shssToken);
-    	if (!StringUtil.isNotEmpty(shssToken)) {
+    	if (!StringUtil.checkTokenExpiration(shssToken)) {
     		result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
-            result.setErrMsg("登录失败,用户名不存在");
+            result.setErrMsg("请求参数错误或登陆信息已过期");
             result.setState(false);
             return result;
 		}

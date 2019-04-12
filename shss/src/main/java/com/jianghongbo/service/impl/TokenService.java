@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 public class TokenService {
     public String getToken(UserInfo user) {
-        String token = UUID.randomUUID() + StringUtil.getCurrentDateTime() + "";
+        String token = StringUtil.getCurrentDateTime() + "_" + UUID.randomUUID() + "";
         return token;
     }
 }

@@ -3,7 +3,7 @@ package com.jianghongbo.common.interceptor;
 import com.jianghongbo.common.annotation.PassToken;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.exception.ShssException;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;

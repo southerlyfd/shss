@@ -1,7 +1,7 @@
 package com.jianghongbo.service.api;
 
 import com.jianghongbo.common.ServiceResult;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 
 import java.util.List;
 
@@ -18,30 +18,30 @@ public interface UserService {
      * @param user
      * @return
      */
-    List<User> getUserList(User user);
+    List<UserInfo> getUserList(UserInfo user);
 
     /**
      * 用户信息查询
      * @param user
      * @return
      */
-    User getUser(User user);
+    UserInfo getUser(UserInfo user);
 
     /**
      * 用户注册
      * @param user
      */
-    void registerUserInfo(User user);
+    void registerUserInfo(UserInfo user);
     /**
      * 用户信息修改
      * @param user
      */
-    void updateUserInfo(User user);
+    void updateUserInfo(UserInfo user);
 
     /**
      * 获取用户登录信息
      * @param shssToken
      * @return
      */
-    ServiceResult<User> getLoginInfo(String shssToken);
+    ServiceResult<UserInfo> getLoginInfo(String shssToken);
 }

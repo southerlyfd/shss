@@ -1,7 +1,7 @@
 package com.jianghongbo.service.impl;
 
 import com.jianghongbo.common.util.StringUtil;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 @Service
 public class TokenService {
-    public String getToken(User user) {
+    public String getToken(UserInfo user) {
         String token = UUID.randomUUID() + StringUtil.getCurrentDateTime() + "";
         return token;
     }

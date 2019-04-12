@@ -7,7 +7,7 @@ import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
 import com.jianghongbo.service.impl.TokenService;
@@ -49,11 +49,11 @@ public class UserController extends BaseController {
      */
     @UserLoginToken
     @RequestMapping("/queryUserList")
-    public JsonResult queryUserList(User userParam){
+    public JsonResult queryUserList(UserInfo userParam){
         JsonResult result = new JsonResult();
         PageHelper.startPage(1, 10);
-        List<User> userList = userService.getUserList(userParam);
-        PageInfo<User> userPageInfo = new PageInfo<>(userList);
+        List<UserInfo> userList = userService.getUserList(userParam);
+        PageInfo<UserInfo> userPageInfo = new PageInfo<>(userList);
         result.setData(userPageInfo);
         return result;
     }
@@ -64,9 +64,9 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/queryUser")
-    public JsonResult queryUser(User userParam){
+    public JsonResult queryUser(UserInfo userParam){
     	JsonResult result = new JsonResult();
-        User user = userService.getUser(userParam);
+        UserInfo user = userService.getUser(userParam);
         result.setData(user);
         return result;
     }
@@ -77,7 +77,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/registerUser")
-    public JsonResult registerUserInfo(User user){
+    public JsonResult registerUserInfo(UserInfo user){
         String username = user.getUsername();
         String password = user.getPassword();
         if (StringUtils.isBlank(StringUtils.trim(username))) {
@@ -98,16 +98,16 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/login")
     //@Transactional  //事务回滚
-    public JsonResult login(User userParam){
+    public JsonResult login(UserInfo userParam){
         JsonResult result = new JsonResult();
-        User user = userService.getUser(userParam);
+        UserInfo user = userService.getUser(userParam);
         if (user != null){
             if (!userParam.getPassword().equals(user.getPassword())) {
                 result.setStateCode(StateCodeConstant.ERROR_PARAM_CODE);
                 result.setErrMsg("登录失败,密码错误");
             } else {
                 int id = user.getId();
-                User login_user = new User();
+                UserInfo login_user = new UserInfo();
                 login_user.setId(id);
                 login_user.setLoginTime("now");
                 String token = tokenService.getToken(user);
@@ -142,7 +142,7 @@ public class UserController extends BaseController {
             result.setState(false);
             return result;
 		}
-    	User user = super.getEffectiveLogin(shssToken);
+    	UserInfo user = super.getEffectiveLogin(shssToken);
     	if (user == null) {
     		result.setStateCode(StateCodeConstant.ERROR_TOKEN_INVALID);
             result.setErrMsg("登陆已过期，请重新登录");

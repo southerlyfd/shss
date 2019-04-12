@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jianghongbo.dao.UserDao">
 
-    <resultMap id="user" type="com.jianghongbo.entity.User">
+    <resultMap id="userInfo" type="com.jianghongbo.entity.UserInfo">
         <result column="id" jdbcType="VARCHAR" property="id" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="password" jdbcType="VARCHAR" property="password" />
@@ -12,7 +12,7 @@
     </resultMap>
 
     <!-- 用户列表查询 -->
-    <select id="getUserList" resultMap="user" parameterType="user" >
+    <select id="getUserList" resultMap="userInfo" parameterType="userInfo" >
         select * from user_info where 1=1
         <if test="id != null and id !=''">
             and id = #{id}
@@ -22,7 +22,7 @@
         </if>
     </select>
     <!-- 用户信息查询 -->
-    <select id="getUser" resultMap="user" parameterType="user" >
+    <select id="getUser" resultMap="userInfo" parameterType="userInfo" >
         select * from user_info where 1=1
         <if test="id != null and id !=''">
             and id = #{id}
@@ -32,24 +32,24 @@
         </if>
     </select>
     <!-- 用户注册 -->
-    <insert id="registerUserInfo" parameterType="user" >
+    <insert id="registerUserInfo" parameterType="userInfo" >
         insert into user_info (username, password, portrait, login_time)
         values (#{username}, #{password}, #{portrait}, now())
     </insert>
     <!-- 用户信息修改 -->
-    <update id="updateUserInfo" parameterType="user" >
+    <update id="updateUserInfo" parameterType="userInfo" >
         update user_info
         <trim prefix="set" suffixOverrides=",">
             <if test="username != null and username !=''"> username = #{username}, </if>
             <if test="password != null and password !=''"> password = #{password}, </if>
             <if test="portrait != null and portrait !=''"> portrait = #{portrait}, </if>
-            <if test="shss_token != null and shss_token !=''"> shss_token = #{shss_token}, </if>
-            <if test="login_time != null and login_time !=''"> login_time = now(), </if>
+            <if test="shssToken != null and shssToken !=''"> shss_token = #{shssToken}, </if>
+            <if test="loginTime != null and loginTime !=''"> login_time = now(), </if>
         </trim>
         where id = #{id}
     </update>
     <!-- 注销用户 -->
-    <delete id="deleteUserInfo" parameterType="user" >
+    <delete id="deleteUserInfo" parameterType="userInfo" >
         delete from user_info where id = #{id}
     </delete>
     
@@ -57,7 +57,7 @@
     	ui.username, ui.portrait, ui.login_time
     </sql>
     
-    <select id="getUserInfoByToken" parameterType="java.lang.String" resultMap="user">
+    <select id="getUserInfoByToken" parameterType="java.lang.String" resultMap="userInfo">
     	select 
 			<include refid="Base_Column_List" />
     	from user_info ui 

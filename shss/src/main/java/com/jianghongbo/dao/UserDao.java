@@ -1,6 +1,6 @@
 package com.jianghongbo.dao;
 
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,30 +14,30 @@ public interface UserDao {
      * @param user
      * @return
      */
-    List<User> getUserList(User user);
+    List<UserInfo> getUserList(UserInfo user);
 
     /**
      * 用户信息查询
      * @param user
      * @return
      */
-    User getUser(User user);
+    UserInfo getUser(UserInfo user);
 
     /**
      * 用户注册
      * @param user
      */
-    void registerUserInfo(User user);
+    void registerUserInfo(UserInfo user);
     /**
      * 用户信息修改
      * @param user
      */
-    void updateUserInfo(User user);
+    void updateUserInfo(UserInfo user);
 
     /**
      * 根据shssToken查询用户信息
      * @param shssToken
      * @return
      */
-    List<User> getUserInfoByToken(String shssToken);
+    List<UserInfo> getUserInfoByToken(String shssToken);
 }

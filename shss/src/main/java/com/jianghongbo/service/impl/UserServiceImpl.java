@@ -2,7 +2,7 @@ package com.jianghongbo.service.impl;
 
 import com.jianghongbo.common.ServiceResult;
 import com.jianghongbo.dao.UserDao;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,34 +23,34 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     @Override
-    public List<User> getUserList(User user) {
+    public List<UserInfo> getUserList(UserInfo user) {
         log.info("getUserInfo：" + user.toString());
         return userDao.getUserList(user);
     }
 
     @Override
-    public User getUser(User user) {
+    public UserInfo getUser(UserInfo user) {
         log.info("getUserInfo：" + user.toString());
         return userDao.getUser(user);
     }
 
     @Override
-    public void registerUserInfo(User user) {
+    public void registerUserInfo(UserInfo user) {
         log.info("registerUserInfo：" + user.toString());
         userDao.registerUserInfo(user);
     }
 
     @Override
-    public void updateUserInfo(User user) {
+    public void updateUserInfo(UserInfo user) {
         log.info("updateUserInfo：" + user.toString());
         userDao.updateUserInfo(user);
     }
 
 	@Override
-	public ServiceResult<User> getLoginInfo(String shssToken) {
-		ServiceResult<User> result = new ServiceResult<User>();
+	public ServiceResult<UserInfo> getLoginInfo(String shssToken) {
+		ServiceResult<UserInfo> result = new ServiceResult<UserInfo>();
 		// 判断用户信息是否已过期
-		List<User> userInfoList = userDao.getUserInfoByToken(shssToken);
+		List<UserInfo> userInfoList = userDao.getUserInfoByToken(shssToken);
 		if (userInfoList == null || userInfoList.size() == 0) {
 			result.setOk(false);
 		} else {

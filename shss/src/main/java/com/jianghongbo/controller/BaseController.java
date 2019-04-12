@@ -3,7 +3,7 @@ package com.jianghongbo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jianghongbo.common.ServiceResult;
-import com.jianghongbo.entity.User;
+import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
 
 /**
@@ -22,11 +22,11 @@ public class BaseController {
 	 * @param shssToken 用户登陆钥匙
 	 * @return 用户信息
 	 */
-	protected User getEffectiveLogin(String shssToken) {
+	protected UserInfo getEffectiveLogin(String shssToken) {
 		// 返回值定义
-		User user = null;
+		UserInfo user = null;
 		// 获取用户登录信息
-		ServiceResult<User> userList = userService.getLoginInfo(shssToken);
+		ServiceResult<UserInfo> userList = userService.getLoginInfo(shssToken);
 		// 判断登陆有效时间是否已过期
 		if (userList.isOk() && userList.getData() != null) {
 			user = userList.getData();

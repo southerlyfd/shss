@@ -10,7 +10,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserInfo {
 
 
     private int id;

@@ -1,5 +1,9 @@
 package com.jianghongbo.common.util;
 
+import com.jianghongbo.common.consts.CommonConst;
+import com.jianghongbo.common.consts.StateCodeConstant;
+import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.entity.UserInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,13 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author ：taoyl
@@ -36,6 +34,14 @@ public class StringUtil extends org.springframework.util.StringUtils {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return sdf.format(date);
     }
+	/**
+	 * 生成token
+	 * @return
+	 */
+	public static String getToken() {
+		String token = StringUtil.getCurrentDateTime() + "_" + UUID.randomUUID() + "";
+		return token;
+	}
 
     /**
      * 校验token是否过期
@@ -54,8 +60,7 @@ public class StringUtil extends org.springframework.util.StringUtils {
 		} catch (ParseException e) {
 			log.info("token值不合法：info");
 			log.debug(("token值不合法：debug"));;
-			e.printStackTrace();
-			return false;
+			throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.TOKEN_WRONGFUL);
 		}
     	Calendar c = Calendar.getInstance();
     	c.setTime(tokenDate);

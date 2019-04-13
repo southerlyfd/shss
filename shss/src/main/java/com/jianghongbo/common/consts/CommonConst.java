@@ -27,6 +27,11 @@ public class CommonConst {
     public static final String USER_INVALID = "user.invalid";
 
     /**
+     * token不合法
+     */
+    public static final String TOKEN_WRONGFUL = "toke.wrongful";
+
+    /**
      * 登录失败,用户名不存在
      */
     public static final String USER_NOT_EXIST = "user.not.exist";

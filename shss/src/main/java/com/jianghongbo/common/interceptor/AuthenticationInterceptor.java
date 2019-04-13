@@ -4,7 +4,9 @@ import com.jianghongbo.common.ServiceResult;
 import com.jianghongbo.common.annotation.PassToken;
 import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.CommonConst;
+import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +50,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
                 // 执行认证
-                if (shssToken == null) {
-                    throw new ShssException(CommonConst.USER_INVALID);
+                if (StringUtil.isBlank(shssToken)) {
+                    throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.TOKEN_WRONGFUL);
                 }
                 ServiceResult<UserInfo> userList = userService.getLoginInfo(shssToken);
                 // 判断登陆有效时间是否已过期
@@ -57,8 +59,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     UserInfo user = userList.getData();
                     // 验证 token
                     if (user == null) {
-                        throw new ShssException(CommonConst.USER_INVALID);
+                        throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.USER_INVALID);
                     }
+                } else {
+                    throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.USER_INVALID);
+                }
+                if (!StringUtil.checkTokenExpiration(shssToken)) {
+                    throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.USER_INVALID);
                 }
                 return true;
             }

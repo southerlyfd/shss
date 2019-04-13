@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jianghongbo.dao.UserInfoReaderMapper">
+
+    <resultMap id="userInfo" type="com.jianghongbo.entity.UserInfo">
+        <result column="id" jdbcType="VARCHAR" property="id" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="portrait" jdbcType="VARCHAR" property="portrait" />
+        <result column="shss_token" jdbcType="VARCHAR" property="shssToken" />
+        <result column="login_time" jdbcType="VARCHAR" property="loginTime" />
+    </resultMap>
+
+    <!-- 用户列表查询 -->
+    <select id="getUserList" resultMap="userInfo" parameterType="userInfo" >
+        select * from user_info where 1=1
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="username != null and username !=''">
+            and username = #{username}
+        </if>
+    </select>
+    <!-- 用户信息查询 -->
+    <select id="getUser" resultMap="userInfo" parameterType="userInfo" >
+        select * from user_info where 1=1
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="username != null and username !=''">
+            and username = #{username}
+        </if>
+    </select>
+    
+    <sql id="Base_Column_List">
+    	ui.username, ui.portrait, ui.login_time
+    </sql>
+    
+    <select id="getUserInfoByToken" parameterType="java.lang.String" resultMap="userInfo">
+    	select 
+			<include refid="Base_Column_List" />
+    	from user_info ui 
+    	where 
+    	ui.shss_token = #{shssToken,jdbcType=VARCHAR}
+    </select>
+    
+</mapper>

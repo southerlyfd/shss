@@ -7,16 +7,14 @@ import com.jianghongbo.common.annotation.UserLoginToken;
 import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.entity.UserInfo;
-import com.jianghongbo.service.api.RedisService;
 import com.jianghongbo.service.api.UserService;
-import com.jianghongbo.service.impl.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +33,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    TokenService tokenService;
-
-    //@Autowired
-    //RedisService redisService;
 
 
     /**
@@ -117,7 +110,7 @@ public class UserController {
                 UserInfo login_user = new UserInfo();
                 login_user.setId(id);
                 login_user.setLoginTime("now");
-                String token = tokenService.getToken(user);
+                String token = StringUtil.getToken();
                 login_user.setShssToken(token);
                 // 修改token
                 userService.updateUserInfo(login_user);

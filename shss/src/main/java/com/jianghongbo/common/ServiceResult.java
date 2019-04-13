@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * @ClassName: ServiceResult.java
- * @Description: 类说明
+ * @Description: Service层返回值封装
  * @author: jianghb
  * @date: 2019年4月12日
  */

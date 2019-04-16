@@ -81,6 +81,7 @@ public class UserController {
         }
         JsonResult result = new JsonResult();
         userService.registerUserInfo(user);
+        result.setErrMsg("注册成功");
         return result;
     }
 
@@ -121,7 +122,7 @@ public class UserController {
         } else {
             throw new ShssException(StateCodeConstant.ERROR_PARAM_CODE, CommonConst.USER_NOT_EXIST);
         }
-
+        result.setErrMsg("登陆成功");
         return result;
     }
 
@@ -135,6 +136,9 @@ public class UserController {
     public JsonResult findUserInfo (String shssToken) {
     	JsonResult result = new JsonResult();
     	log.info("shssToken:" + shssToken);
+        if (StringUtil.isBlank(shssToken)) {
+            throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.TOKEN_WRONGFUL);
+        }
         UserInfo userInfo = new UserInfo();
         userInfo.setShssToken(shssToken);
     	UserInfo user = userService.getUser(userInfo);

@@ -30,6 +30,9 @@
         <if test="username != null and username !=''">
             and username = #{username}
         </if>
+        <if test="shssToken != null and shssToken !=''">
+            and shss_token = #{shssToken}
+        </if>
     </select>
     
     <sql id="Base_Column_List">

@@ -1,8 +1,10 @@
 package com.jianghongbo.common.config;
 
 import com.jianghongbo.common.interceptor.AuthenticationInterceptor;
+import com.jianghongbo.common.interceptor.MyLocaleResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,5 +23,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();
+    }
+
+    /**
+     * 配置自己的国际化语言解析器
+     * @return
+     */
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new MyLocaleResolver();
     }
 }

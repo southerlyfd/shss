@@ -13,6 +13,8 @@ import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
@@ -128,17 +130,15 @@ public class UserController {
 
     /**
      * 获取用户信息
-     * @param shssToken
+     * @param headers
      * @return
      */
     @UserLoginToken
     @RequestMapping("/findUserInfo")
-    public JsonResult findUserInfo (String shssToken) {
+    public JsonResult findUserInfo (@RequestHeader HttpHeaders headers) {
     	JsonResult result = new JsonResult();
+    	String shssToken = headers.getFirst(CommonConst.SHSS_TOKEN);
     	log.info("shssToken:" + shssToken);
-        if (StringUtil.isBlank(shssToken)) {
-            throw new ShssException(StateCodeConstant.ERROR_TOKEN_INVALID, CommonConst.TOKEN_WRONGFUL);
-        }
         UserInfo userInfo = new UserInfo();
         userInfo.setShssToken(shssToken);
     	UserInfo user = userService.getUser(userInfo);

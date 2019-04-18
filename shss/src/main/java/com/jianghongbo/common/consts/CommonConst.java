@@ -40,4 +40,14 @@ public class CommonConst {
      * 登录失败，密码不正确
      */
     public static final String PASSWORD_IS_WRONG = "password.is.wrong";
+
+    /**
+     * http请求方式不能为空
+     */
+    public static final String HTTPMETHOD_NOT_NULL = "httpmethod.not.null";
+
+    /**
+     * URL不能为空
+     */
+    public static final String URL_NOT_NULL = "url.not.null";
 }

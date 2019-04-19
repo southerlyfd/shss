@@ -32,7 +32,7 @@ public class CommonConst {
     public static final String TOKEN_WRONGFUL = "toke.wrongful";
 
     /**
-     * 登录失败,用户名不存在
+     * 登录失败,用户不存在
      */
     public static final String USER_NOT_EXIST = "user.not.exist";
 
@@ -50,4 +50,15 @@ public class CommonConst {
      * URL不能为空
      */
     public static final String URL_NOT_NULL = "url.not.null";
+
+    /**
+     * 该用户名已存在
+     */
+    public static final String USERNAME_IS_EXIST = "username.is.exist";
+
+    /**
+     * 用户ID不正确
+     */
+    public static final String USERID_IS_WRONG = "userID.is.wrong";
+
 }

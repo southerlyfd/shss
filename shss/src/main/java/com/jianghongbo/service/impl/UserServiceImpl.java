@@ -1,6 +1,9 @@
 package com.jianghongbo.service.impl;
 
 import com.jianghongbo.common.ServiceResult;
+import com.jianghongbo.common.consts.CommonConst;
+import com.jianghongbo.common.consts.StateCodeConstant;
+import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.dao.UserInfoReaderMapper;
 import com.jianghongbo.dao.UserInfoWriterMapper;
 import com.jianghongbo.entity.UserInfo;
@@ -34,16 +37,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfo getUser(UserInfo user) {
         log.info("getUserInfo：" + user.toString());
-        return userInfoReaderMapper.getUser(user);
+        List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
+        if (userInfoList == null || userInfoList.size() == 0) {
+            throw new ShssException(StateCodeConstant.ERROR_CODE, CommonConst.USER_NOT_EXIST);
+        }
+        return userInfoList.get(0);
     }
 
     @Override
     public void registerUserInfo(UserInfo user) {
         log.info("registerUserInfo：" + user.toString());
+        List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
+        if (userInfoList != null && userInfoList.size() > 0) {
+            throw new ShssException(StateCodeConstant.ERROR_CODE, CommonConst.USERNAME_IS_EXIST);
+        }
         userInfoWriterMapper.registerUserInfo(user);
     }
 
     @Override
+    //@Transactional  //事务回滚
     public void updateUserInfo(UserInfo user) {
         log.info("updateUserInfo：" + user.toString());
         userInfoWriterMapper.updateUserInfo(user);

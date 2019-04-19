@@ -15,12 +15,6 @@ public interface UserInfoReaderMapper {
      */
     List<UserInfo> getUserList(UserInfo user);
 
-    /**
-     * 用户信息查询
-     * @param user
-     * @return
-     */
-    UserInfo getUser(UserInfo user);
 
     /**
      * 根据shssToken查询用户信息

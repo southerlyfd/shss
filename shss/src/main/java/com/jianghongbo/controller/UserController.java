@@ -93,7 +93,6 @@ public class UserController {
      * @return
      */
     @RequestMapping("/login")
-    //@Transactional  //事务回滚
     public JsonResult login(UserInfo userParam){
         JsonResult result = new JsonResult();
         String username = userParam.getUsername();
@@ -151,5 +150,27 @@ public class UserController {
     	result.setData(map);
     	result.setStateCode(StateCodeConstant.SUCCESS_CODE);
     	return result;
+    }
+
+    /**
+     *  用户退出
+     * @param headers
+     * @return
+     */
+    @UserLoginToken
+    @RequestMapping("/logoutUser")
+    public JsonResult logoutUser(@RequestHeader HttpHeaders headers){
+        String shssToken = headers.getFirst(CommonConst.SHSS_TOKEN);
+        log.info("shssToken:" + shssToken);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setShssToken(shssToken);
+        UserInfo user = userService.getUser(userInfo);
+        UserInfo currentUser = new UserInfo();
+        currentUser.setId(user.getId());
+        currentUser.setShssToken("");
+        JsonResult result = new JsonResult();
+        userService.updateUserInfo(currentUser);
+        result.setErrMsg("退出成功");
+        return result;
     }
 }

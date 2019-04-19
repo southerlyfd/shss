@@ -11,28 +11,21 @@
         <result column="login_time" jdbcType="VARCHAR" property="loginTime" />
     </resultMap>
 
-    <!-- 用户列表查询 -->
-    <select id="getUserList" resultMap="userInfo" parameterType="userInfo" >
-        select * from user_info where 1=1
-        <if test="id != null and id !=''">
-            and id = #{id}
-        </if>
-        <if test="username != null and username !=''">
-            and username = #{username}
-        </if>
-    </select>
     <!-- 用户信息查询 -->
-    <select id="getUser" resultMap="userInfo" parameterType="userInfo" >
-        select * from user_info where 1=1
-        <if test="id != null and id !=''">
-            and id = #{id}
-        </if>
-        <if test="username != null and username !=''">
-            and username = #{username}
-        </if>
-        <if test="shssToken != null and shssToken !=''">
-            and shss_token = #{shssToken}
-        </if>
+    <select id="getUserList" resultMap="userInfo" parameterType="userInfo" >
+        select * from user_info
+        <where>
+            <if test="id != null and id !=''">
+                id = #{id}
+            </if>
+            <if test="username != null and username !=''">
+                and upper(username) = upper(#{username})
+            </if>
+            <if test="shssToken != null and shssToken !=''">
+                and shss_token = #{shssToken}
+            </if>
+        </where>
+
     </select>
     
     <sql id="Base_Column_List">

@@ -1,7 +1,9 @@
 package com.jianghongbo.common.config;
 
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.jianghongbo.common.interceptor.AuthenticationInterceptor;
 import com.jianghongbo.common.interceptor.MyLocaleResolver;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -32,5 +34,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Bean
     public LocaleResolver localeResolver() {
         return new MyLocaleResolver();
+    }
+
+    @Bean
+    public HttpMessageConverters useConverters() {
+
+        return new HttpMessageConverters(new FastJsonHttpMessageConverter());
     }
 }

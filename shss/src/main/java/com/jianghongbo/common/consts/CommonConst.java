@@ -61,4 +61,9 @@ public class CommonConst {
      */
     public static final String USERID_IS_WRONG = "userID.is.wrong";
 
+    /**
+     * 登陆成功
+     */
+    public static final String LOGIN_SUCCESS = "login.success";
+
 }

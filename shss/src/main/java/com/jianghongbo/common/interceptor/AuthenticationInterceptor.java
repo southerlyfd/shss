@@ -16,6 +16,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 /**
  * @author ：taoyl
@@ -32,12 +35,25 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
         String shssToken = httpServletRequest.getHeader(CommonConst.SHSS_TOKEN);// 从 http 请求头中取出 token
         log.info("shssToken:" + shssToken);
+        // 记录下请求内容
+        log.info("URL : " + httpServletRequest.getRequestURL().toString());
+        log.info("HTTP_METHOD : " + httpServletRequest.getMethod());
+        log.info("IP : " + httpServletRequest.getRemoteAddr());
+        InputStream is = httpServletRequest.getInputStream ();
+        StringBuilder responseStrBuilder = new StringBuilder ();
+        BufferedReader streamReader = new BufferedReader (new InputStreamReader(is,"UTF-8"));
+        String inputStr;
+        while ((inputStr = streamReader.readLine ()) != null);
+        responseStrBuilder.append (inputStr);
+        String parmeter = responseStrBuilder.toString();
+        log.info("PARMETER : " + parmeter);
         // 如果不是映射到方法直接通过
         if(!(object instanceof HandlerMethod)){
             return true;
         }
         HandlerMethod handlerMethod=(HandlerMethod)object;
         Method method=handlerMethod.getMethod();
+        log.info("CLASS_METHOD : " + method.getName());
         //检查是否有passtoken注释，有则跳过认证
 //        if (method.isAnnotationPresent(PassToken.class)) {
 //            PassToken passToken = method.getAnnotation(PassToken.class);

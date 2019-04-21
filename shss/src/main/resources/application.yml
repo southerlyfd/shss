@@ -1,7 +1,36 @@
 #默认使用配置
 spring:
+  #开发配置
   profiles:
     active: dev
+  #mysql配置
+  datasource:
+    url: jdbc:mysql://47.98.183.208:3306/shss
+    username: root
+    password: Jhb123456~
+    driver-class-name: com.mysql.jdbc.Driver
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+  # redis配置，以下有默认配置的也可以使用默认配置
+  redis:
+    host: 47.98.183.208
+    port: 6379
+  pool:
+    max-active: 8
+    max-wait: 1
+    max-idle: 8
+    min-idle: 0
+  timeout: 0
+  # 国际化配置
+  messages:
+    encoding: UTF-8
+    basename: messages
+  # mongodb配置
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017/logger
+      username: logUser
+      password: tyl123
 
 #公共配置与profiles选择无关 mapperLocations指的路径是src/main/resources
 mybatis:
@@ -13,37 +42,3 @@ logging:
   level:
     com.jianghongbo: DEBUG #包路径为mapper文件包路径
     org.springframework.boot.autoconfigure: INFO
----
-
-#开发配置
-spring:
-  profiles: dev
-
-  datasource:
-    url: jdbc:mysql://47.98.183.208:3306/shss
-    username: root
-    password: Jhb123456~
-    driver-class-name: com.mysql.jdbc.Driver
-    # 使用druid数据源
-    type: com.alibaba.druid.pool.DruidDataSource
-
----
-
-# redis配置，以下有默认配置的也可以使用默认配置
-spring:
-  redis:
-    host: 47.98.183.208
-    port: 6379
-  pool:
-    max-active: 8
-    max-wait: 1
-    max-idle: 8
-    min-idle: 0
-  timeout: 0
-
----
-########################### international config ###########################
-spring:
-  messages:
-    encoding: UTF-8
-    basename: messages

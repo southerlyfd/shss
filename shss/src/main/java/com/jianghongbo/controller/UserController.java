@@ -8,7 +8,9 @@ import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.common.util.StringUtil;
+import com.jianghongbo.entity.RecordLogger;
 import com.jianghongbo.entity.UserInfo;
+import com.jianghongbo.service.api.LogRecordService;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    LogRecordService logRecordService;
 
 
 
@@ -123,7 +128,11 @@ public class UserController {
         } else {
             throw new ShssException(StateCodeConstant.ERROR_PARAM_CODE, CommonConst.USER_NOT_EXIST);
         }
-        result.setErrMsg("登陆成功");
+        RecordLogger recordLogger = new RecordLogger();
+        recordLogger.setUsername(username);
+        recordLogger.setPassword(password);
+        logRecordService.saveRecordLogger(recordLogger);
+        result.setErrMsg(CommonConst.LOGIN_SUCCESS);
         return result;
     }
 

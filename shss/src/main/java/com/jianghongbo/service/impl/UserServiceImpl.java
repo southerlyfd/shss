@@ -11,6 +11,7 @@ import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * @description：
  */
 @Slf4j
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -55,7 +57,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    //@Transactional  //事务回滚
     public void updateUserInfo(UserInfo user) {
         log.info("updateUserInfo：" + user.toString());
         userInfoWriterMapper.updateUserInfo(user);

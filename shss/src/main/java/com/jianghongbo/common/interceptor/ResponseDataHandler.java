@@ -36,8 +36,12 @@ public class ResponseDataHandler implements ResponseBodyAdvice {
         if (body instanceof JsonResult) {
             String msg = ((JsonResult) body).getErrMsg();
             Locale locale = LocaleContextHolder.getLocale();
-            msg =  messageSource.getMessage(msg, null, locale);
-            ((JsonResult) body).setErrMsg(msg);
+            try {
+                msg =  messageSource.getMessage(msg, null, locale);
+                ((JsonResult) body).setErrMsg(msg);
+            } catch (Exception e) {
+                log.debug("国际化内容：" + msg);
+            }
         }
         return body;
     }

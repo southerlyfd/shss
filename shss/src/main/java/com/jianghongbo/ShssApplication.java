@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @MapperScan("com.*.dao") //扫描的mapper
 @SpringBootApplication
-//@ComponentScan(basePackages = {"com.jianghongbo.controller", "com.jianghongbo.service"})
 public class ShssApplication {
 
 	public static void main(String[] args) {

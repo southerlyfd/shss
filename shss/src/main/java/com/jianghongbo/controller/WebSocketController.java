@@ -5,14 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.consts.StateCodeConstant;
-import com.jianghongbo.service.api.DemoServiceApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -47,7 +42,6 @@ public class WebSocketController {
 		this.session = session;
 		websocketList.put(userId,this);
 		log.info("websocketList->"+ JSON.toJSONString(websocketList));
-		//webSocketSet.add(this);     //加入set中
 		addOnlineCount();           //在线数加1
 		log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
 		this.userId=userId;

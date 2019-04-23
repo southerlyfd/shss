@@ -154,6 +154,7 @@ public class UserController {
     	map.put("username", user.getUsername());
     	map.put("portrait", user.getPortrait());
     	map.put("loginTime", user.getLoginTime());
+    	map.put("userId", user.getId());
     	result.setState(true);
     	result.setErrMsg("成功");
     	result.setData(map);

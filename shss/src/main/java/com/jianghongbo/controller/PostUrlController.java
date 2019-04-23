@@ -3,8 +3,10 @@ package com.jianghongbo.controller;
 import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
+
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,7 +30,7 @@ public class PostUrlController {
 	private final String GET = "GET";
 
 	@RequestMapping("/doPostForResult")
-	public String doPostForResult(String method, String url, @RequestParam Map<String, String> requestParam) {
+	public JSONObject doPostForResult(String method, String url, @RequestParam Map<String, String> requestParam) {
 		if (StringUtils.isBlank(StringUtils.trim(method))) {
 			throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.HTTPMETHOD_NOT_NULL);
 		}
@@ -49,10 +51,12 @@ public class PostUrlController {
 			}
 			responseEntity = restTemplate.postForEntity(url, params, String.class);
 		}
+		JSONObject jsonData =  null;
 		if(responseEntity != null){
 			sr = responseEntity.getBody();
+			jsonData = JSONObject.fromObject(sr);
 		}
-		System.out.println("返回参数：" + sr);
-		return sr;
+//		System.out.println("返回参数：" + sr);
+		return jsonData;
 	}
 }

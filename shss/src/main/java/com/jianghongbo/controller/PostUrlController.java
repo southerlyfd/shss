@@ -1,11 +1,9 @@
 package com.jianghongbo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
-
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -54,7 +52,7 @@ public class PostUrlController {
 		JSONObject jsonData =  null;
 		if(responseEntity != null){
 			sr = responseEntity.getBody();
-			jsonData = JSONObject.fromObject(sr);
+			jsonData = JSONObject.parseObject(sr);
 		}
 //		System.out.println("返回参数：" + sr);
 		return jsonData;

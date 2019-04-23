@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.consts.StateCodeConstant;
+import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.common.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,7 +32,7 @@ public class WebSocketController {
 	//与某个客户端的连接会话，需要通过它来给客户端发送数据
 	private Session session;
 	
-	//新：使用map对象，便于根据userId来获取对应的WebSocket
+	//使用map对象，便于根据userId来获取对应的WebSocket
 	private static ConcurrentHashMap<String,WebSocketController> websocketList = new ConcurrentHashMap<>();
 	
 	//接收sid
@@ -53,7 +55,8 @@ public class WebSocketController {
 			result.setStateCode(StateCodeConstant.SUCCESS_CODE);
 			sendMessage(JSON.toJSONString(result));
 		} catch (IOException e) {
-			log.error("websocket IO异常");
+			log.debug("websocket异常：", e.getStackTrace());
+			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
 		}
 	}
 
@@ -75,34 +78,19 @@ public class WebSocketController {
 	 * @param message 客户端发送过来的消息*/
 	@OnMessage
 	public void onMessage(String message, Session session) {
-		log.info("收到来自窗口"+userId+"的信息:"+message);
-		if(StringUtils.isNotBlank(message)){
-			JSONArray list=JSONArray.parseArray(message);
-			for (int i = 0; i < list.size(); i++) {
-				try {
-					//解析发送的报文
-					JSONObject object = list.getJSONObject(i);
-					String toUserId=object.getString("toUserId");
-					String contentText=object.getString("contentText");
-					object.put("fromUserId",this.userId);
-					//传送给对应用户的websocket
-					if(StringUtils.isNotBlank(toUserId)&&StringUtils.isNotBlank(contentText)){
-						WebSocketController socketx=websocketList.get(toUserId);
-						//需要进行转换，userId
-						if(socketx!=null){
-							JsonResult result = new JsonResult();
-							result.setState(true);
-							result.setErrMsg("失败");
-							result.setData(object);
-							result.setStateCode(StateCodeConstant.ERROR_CODE);
-							socketx.sendMessage(JSON.toJSONString(result));
-							//此处可以放置相关业务代码，例如存储到数据库
-						}
-					}
-				}catch (Exception e){
-					e.printStackTrace();
-				}
+		log.info("收到来自窗口" + userId + "的信息:" + message);
+		JSONObject messageObject = JSONObject.parseObject(message);
+		String contentText = messageObject.getString("contentText");
+		String toUserId = messageObject.getString("toUserId");
+		try {
+			if(StringUtil.isBlank(toUserId)) {
+				sendtoAll(contentText);
+			} else {
+				sendtoUser(contentText, toUserId);
 			}
+		} catch (IOException e) {
+			log.debug("发送消息异常：", e.getStackTrace());
+			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
 		}
 	}
 
@@ -113,8 +101,8 @@ public class WebSocketController {
 	 */
 	@OnError
 	public void onError(Session session, Throwable error) {
-		log.error("发生错误");
-		error.printStackTrace();
+		log.error("发生错误", error.getStackTrace());
+		throw new ShssException(StateCodeConstant.ERROR_CODE, error.getMessage());
 	}
 	/**
 	 * 实现服务器主动推送
@@ -123,25 +111,39 @@ public class WebSocketController {
 		this.session.getBasicRemote().sendText(message);
 	}
 
+	/**
+	 * 发送信息给指定ID用户，如果用户不在线则返回不在线信息给自己
+	 * @param message
+	 * @param sendUserId
+	 * @throws IOException
+	 */
+	public void sendtoUser(String message,String sendUserId) throws IOException {
+		if (websocketList.get(sendUserId) != null) {
+			if(!userId.equals(sendUserId))
+				websocketList.get(sendUserId).sendMessage( "用户" + userId + "发来消息：" + " <br/> " + message);
+			else
+				websocketList.get(sendUserId).sendMessage(message);
+		} else {
+			//如果用户不在线则返回不在线信息给自己
+			sendtoUser("当前用户不在线",userId);
+		}
+	}
 
 	/**
-	 * 群发自定义消息
-	 * */
-    /*public static void sendInfo(String message,@PathParam("userId") String userId) throws IOException {
-        log.info("推送消息到窗口"+userId+"，推送内容:"+message);
-        for (WebSocketController item : webSocketSet) {
-            try {
-                //这里可以设定只推送给这个sid的，为null则全部推送
-                if(userId==null) {
-                    item.sendMessage(message);
-                }else if(item.userId.equals(userId)){
-                    item.sendMessage(message);
-                }
-            } catch (IOException e) {
-                continue;
-            }
-        }
-    }*/
+	 * 发送信息给所有人
+	 * @param message
+	 * @throws IOException
+	 */
+	public void sendtoAll(String message) throws IOException {
+		for (String key : websocketList.keySet()) {
+			try {
+				websocketList.get(key).sendMessage(message);
+			} catch (IOException e) {
+				log.debug("发送消息给所有人异常：", e.getStackTrace());
+				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+			}
+		}
+	}
 
 	public static synchronized int getOnlineCount() {
 		return onlineCount;

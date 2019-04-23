@@ -119,10 +119,15 @@ public class WebSocketController {
 	 */
 	public void sendtoUser(String message,String sendUserId) throws IOException {
 		if (websocketList.get(sendUserId) != null) {
-			if(!userId.equals(sendUserId))
-				websocketList.get(sendUserId).sendMessage( "用户" + userId + "发来消息：" + " <br/> " + message);
-			else
-				websocketList.get(sendUserId).sendMessage(message);
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("userId", userId);
+			jsonObject.put("message", message);
+			jsonObject.put("toUserId", sendUserId);
+			if(!userId.equals(sendUserId)) {
+				websocketList.get(sendUserId).sendMessage(JSONObject.toJSONString(jsonObject));
+			} else {
+				websocketList.get(sendUserId).sendMessage(JSONObject.toJSONString(jsonObject));
+			}
 		} else {
 			//如果用户不在线则返回不在线信息给自己
 			sendtoUser("当前用户不在线",userId);
@@ -135,9 +140,12 @@ public class WebSocketController {
 	 * @throws IOException
 	 */
 	public void sendtoAll(String message) throws IOException {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("userId", userId);
+		jsonObject.put("message", message);
 		for (String key : websocketList.keySet()) {
 			try {
-				websocketList.get(key).sendMessage(message);
+				websocketList.get(key).sendMessage(JSONObject.toJSONString(jsonObject));
 			} catch (IOException e) {
 				log.debug("发送消息给所有人异常：", e.getStackTrace());
 				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());

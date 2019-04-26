@@ -66,4 +66,5 @@ public class CommonConst {
      */
     public static final String LOGIN_SUCCESS = "login.success";
 
+
 }

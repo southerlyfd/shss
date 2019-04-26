@@ -1,19 +1,23 @@
 package com.jianghongbo.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.jianghongbo.common.JsonResult;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.common.util.StringUtil;
+import com.jianghongbo.entity.UserInfo;
+import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,7 +32,11 @@ public class WebSocketController {
 
 	//静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
 	private static int onlineCount = 0;
-	
+
+	//静态变量，用来记录当前在线用户。应该把它设计成线程安全的。
+	private static Map<String, UserInfo> userInfoMap = new HashMap<>();
+	private static List<UserInfo> userInfoList = new ArrayList<>();
+
 	//与某个客户端的连接会话，需要通过它来给客户端发送数据
 	private Session session;
 	
@@ -37,22 +45,51 @@ public class WebSocketController {
 	
 	//接收sid
 	private String userId="";
+
+	/**
+	 * 上线-0，下线-1，发送消息-2
+	 */
+	private static final String DOWN_LINE = "0";
+	private static final String ON_LINE = "1";
+	private static final String SEND_MESSAGE = "2";
+
+	//  这里使用静态，让 service 属于类
+	private static UserService userService;
+	// 注入的时候，给类的 service 注入
+	@Autowired
+	public void setChatService(UserService userService) {
+		this.userService = userService;
+	}
 	/**
 	 * 连接建立成功调用的方法*/
 	@OnOpen
 	public void onOpen(Session session,@PathParam("userId") String userId) {
 		this.session = session;
 		websocketList.put(userId,this);
+		UserInfo userInfo = new UserInfo();
+		userInfo.setId(Integer.parseInt(userId));
+		userInfoMap.put(userId, userService.getUser(userInfo));
 		log.info("websocketList->"+ JSON.toJSONString(websocketList));
 		addOnlineCount();           //在线数加1
 		log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
 		this.userId=userId;
-		JsonResult result = new JsonResult();
+//		JsonResult result = new JsonResult();
+//		try {
+//			result.setState(true);
+//			result.setErrMsg("成功");
+//			result.setData("当前在线人数为" + getOnlineCount());
+//			result.setStateCode(StateCodeConstant.SUCCESS_CODE);
+//			sendMessage(JSON.toJSONString(result));
+//		} catch (IOException e) {
+//			log.debug("websocket异常：", e.getStackTrace());
+//			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+//		}
 		try {
-			result.setState(true);
-			result.setErrMsg("成功");
-			result.setData("当前在线人数为" + getOnlineCount());
-			result.setStateCode(StateCodeConstant.SUCCESS_CODE);
+			JSONObject result = new JSONObject();
+			result.put("userState", ON_LINE);
+			result.put("onlineNum", getOnlineCount());
+			result.put("userId", this.userId);
+			result.put("userInfoList", getUserInfoList());
 			sendMessage(JSON.toJSONString(result));
 		} catch (IOException e) {
 			log.debug("websocket异常：", e.getStackTrace());
@@ -67,8 +104,20 @@ public class WebSocketController {
 	public void onClose() {
 		if(websocketList.get(this.userId)!=null){
 			websocketList.remove(this.userId);
+			userInfoMap.remove(this.userId);
 			subOnlineCount();           //在线数减1
 			log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
+			try {
+				JSONObject result = new JSONObject();
+				result.put("userState", DOWN_LINE);
+				result.put("onlineNum", getOnlineCount());
+				result.put("userId", this.userId);
+				result.put("userInfoList", getUserInfoList());
+				sendtoAll(JSON.toJSONString(result));
+			} catch (IOException e) {
+				log.debug("发送消息异常：", e.getStackTrace());
+				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+			}
 		}
 	}
 
@@ -82,11 +131,17 @@ public class WebSocketController {
 		JSONObject messageObject = JSONObject.parseObject(message);
 		String contentText = messageObject.getString("contentText");
 		String toUserId = messageObject.getString("toUserId");
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("userState", SEND_MESSAGE);
+		jsonObject.put("userId", userId);
+		jsonObject.put("message", contentText);
 		try {
 			if(StringUtil.isBlank(toUserId)) {
-				sendtoAll(contentText);
+				sendtoAll(JSONObject.toJSONString(jsonObject));
 			} else {
-				sendtoUser(contentText, toUserId);
+				jsonObject.put("toUserId", toUserId);
+				sendtoUser(JSONObject.toJSONString(jsonObject), toUserId);
 			}
 		} catch (IOException e) {
 			log.debug("发送消息异常：", e.getStackTrace());
@@ -119,15 +174,7 @@ public class WebSocketController {
 	 */
 	public void sendtoUser(String message,String sendUserId) throws IOException {
 		if (websocketList.get(sendUserId) != null) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("userId", userId);
-			jsonObject.put("message", message);
-			jsonObject.put("toUserId", sendUserId);
-			if(!userId.equals(sendUserId)) {
-				websocketList.get(sendUserId).sendMessage(JSONObject.toJSONString(jsonObject));
-			} else {
-				websocketList.get(sendUserId).sendMessage(JSONObject.toJSONString(jsonObject));
-			}
+			websocketList.get(sendUserId).sendMessage(message);
 		} else {
 			//如果用户不在线则返回不在线信息给自己
 			sendtoUser("当前用户不在线",userId);
@@ -140,12 +187,9 @@ public class WebSocketController {
 	 * @throws IOException
 	 */
 	public void sendtoAll(String message) throws IOException {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("userId", userId);
-		jsonObject.put("message", message);
 		for (String key : websocketList.keySet()) {
 			try {
-				websocketList.get(key).sendMessage(JSONObject.toJSONString(jsonObject));
+				websocketList.get(key).sendMessage(message);
 			} catch (IOException e) {
 				log.debug("发送消息给所有人异常：", e.getStackTrace());
 				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
@@ -164,4 +208,13 @@ public class WebSocketController {
 	public static synchronized void subOnlineCount() {
 		WebSocketController.onlineCount--;
 	}
+
+	public static synchronized List<UserInfo> getUserInfoList() {
+		userInfoList.clear();
+		for (String key : userInfoMap.keySet()) {
+			userInfoList.add(userInfoMap.get(key));
+		}
+		return userInfoList;
+	}
+
 }

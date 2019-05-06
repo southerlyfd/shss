@@ -64,12 +64,13 @@ public class WebSocketController {
 	 * 连接建立成功调用的方法*/
 	@OnOpen
 	public void onOpen(Session session,@PathParam("userId") String userId) {
-		if (!websocketList.contains(userId)) {
+		if (websocketList != null && !websocketList.keySet().contains(userId)) {
 			this.session = session;
 			websocketList.put(userId,this);
 			UserInfo userInfo = new UserInfo();
 			userInfo.setId(Integer.parseInt(userId));
-			userInfoMap.put(userId, userService.getUser(userInfo));
+			userInfo = userService.getUser(userInfo);
+			userInfoMap.put(userId, userInfo);
 			log.info("websocketList->"+ JSON.toJSONString(websocketList));
 			addOnlineCount();           //在线数加1
 			log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
@@ -79,6 +80,7 @@ public class WebSocketController {
 				result.put("userState", ON_LINE);
 				result.put("onlineNum", getOnlineCount());
 				result.put("userId", this.userId);
+				result.put("username", userInfo.getUsername());
 				result.put("userInfoList", getUserInfoList());
 				sendtoAll(JSON.toJSONString(result));
 			} catch (IOException e) {
@@ -94,15 +96,18 @@ public class WebSocketController {
 	@OnClose
 	public void onClose() {
 		if(websocketList.get(this.userId)!=null){
+			UserInfo userInfo = userInfoMap.get(this.userId);
 			websocketList.remove(this.userId);
 			userInfoMap.remove(this.userId);
 			subOnlineCount();           //在线数减1
 			log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
 			try {
+
 				JSONObject result = new JSONObject();
 				result.put("userState", DOWN_LINE);
 				result.put("onlineNum", getOnlineCount());
 				result.put("userId", this.userId);
+				result.put("username", userInfo.getUsername());
 				result.put("userInfoList", getUserInfoList());
 				sendtoAll(JSON.toJSONString(result));
 			} catch (IOException e) {
@@ -118,14 +123,16 @@ public class WebSocketController {
 	 * @param message 客户端发送过来的消息*/
 	@OnMessage
 	public void onMessage(String message, Session session) {
-		log.info("收到来自窗口" + userId + "的信息:" + message);
 		JSONObject messageObject = JSONObject.parseObject(message);
+		userId = messageObject.getString("userId");
+		log.info("收到来自窗口" + userId + "的信息:" + message);
 		String contentText = messageObject.getString("contentText");
 		String toUserId = messageObject.getString("toUserId");
-
+		UserInfo userInfo = userInfoMap.get(userId);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("userState", SEND_MESSAGE);
 		jsonObject.put("userId", userId);
+		jsonObject.put("username", userInfo.getUsername());
 		jsonObject.put("message", contentText);
 		try {
 			if(StringUtil.isBlank(toUserId)) {

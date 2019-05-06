@@ -64,36 +64,27 @@ public class WebSocketController {
 	 * 连接建立成功调用的方法*/
 	@OnOpen
 	public void onOpen(Session session,@PathParam("userId") String userId) {
-		this.session = session;
-		websocketList.put(userId,this);
-		UserInfo userInfo = new UserInfo();
-		userInfo.setId(Integer.parseInt(userId));
-		userInfoMap.put(userId, userService.getUser(userInfo));
-		log.info("websocketList->"+ JSON.toJSONString(websocketList));
-		addOnlineCount();           //在线数加1
-		log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
-		this.userId=userId;
-//		JsonResult result = new JsonResult();
-//		try {
-//			result.setState(true);
-//			result.setErrMsg("成功");
-//			result.setData("当前在线人数为" + getOnlineCount());
-//			result.setStateCode(StateCodeConstant.SUCCESS_CODE);
-//			sendMessage(JSON.toJSONString(result));
-//		} catch (IOException e) {
-//			log.debug("websocket异常：", e.getStackTrace());
-//			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
-//		}
-		try {
-			JSONObject result = new JSONObject();
-			result.put("userState", ON_LINE);
-			result.put("onlineNum", getOnlineCount());
-			result.put("userId", this.userId);
-			result.put("userInfoList", getUserInfoList());
-			sendMessage(JSON.toJSONString(result));
-		} catch (IOException e) {
-			log.debug("websocket异常：", e.getStackTrace());
-			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+		if (!websocketList.contains(userId)) {
+			this.session = session;
+			websocketList.put(userId,this);
+			UserInfo userInfo = new UserInfo();
+			userInfo.setId(Integer.parseInt(userId));
+			userInfoMap.put(userId, userService.getUser(userInfo));
+			log.info("websocketList->"+ JSON.toJSONString(websocketList));
+			addOnlineCount();           //在线数加1
+			log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
+			this.userId=userId;
+			try {
+				JSONObject result = new JSONObject();
+				result.put("userState", ON_LINE);
+				result.put("onlineNum", getOnlineCount());
+				result.put("userId", this.userId);
+				result.put("userInfoList", getUserInfoList());
+				sendtoAll(JSON.toJSONString(result));
+			} catch (IOException e) {
+				log.debug("websocket异常：", e.getStackTrace());
+				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+			}
 		}
 	}
 

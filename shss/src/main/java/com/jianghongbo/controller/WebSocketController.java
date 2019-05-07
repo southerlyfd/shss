@@ -3,7 +3,6 @@ package com.jianghongbo.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jianghongbo.common.consts.StateCodeConstant;
-import com.jianghongbo.common.exception.ShssException;
 import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
@@ -85,7 +84,6 @@ public class WebSocketController {
 				sendtoAll(JSON.toJSONString(result));
 			} catch (IOException e) {
 				log.debug("websocket异常：", e.getStackTrace());
-				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
 			}
 		}
 	}
@@ -112,7 +110,6 @@ public class WebSocketController {
 				sendtoAll(JSON.toJSONString(result));
 			} catch (IOException e) {
 				log.debug("发送消息异常：", e.getStackTrace());
-				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
 			}
 		}
 	}
@@ -124,14 +121,13 @@ public class WebSocketController {
 	@OnMessage
 	public void onMessage(String message, Session session) {
 		JSONObject messageObject = JSONObject.parseObject(message);
-		userId = messageObject.getString("userId");
-		log.info("收到来自窗口" + userId + "的信息:" + message);
+		log.info("收到来自窗口" + this.userId + "的信息:" + message);
 		String contentText = messageObject.getString("contentText");
 		String toUserId = messageObject.getString("toUserId");
-		UserInfo userInfo = userInfoMap.get(userId);
+		UserInfo userInfo = userInfoMap.get(this.userId);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("userState", SEND_MESSAGE);
-		jsonObject.put("userId", userId);
+		jsonObject.put("userId", this.userId);
 		jsonObject.put("username", userInfo.getUsername());
 		jsonObject.put("message", contentText);
 		try {
@@ -143,7 +139,7 @@ public class WebSocketController {
 			}
 		} catch (IOException e) {
 			log.debug("发送消息异常：", e.getStackTrace());
-			throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -155,7 +151,7 @@ public class WebSocketController {
 	@OnError
 	public void onError(Session session, Throwable error) {
 		log.error("发生错误", error.getStackTrace());
-		throw new ShssException(StateCodeConstant.ERROR_CODE, error.getMessage());
+		error.printStackTrace();
 	}
 	/**
 	 * 实现服务器主动推送
@@ -190,7 +186,6 @@ public class WebSocketController {
 				websocketList.get(key).sendMessage(message);
 			} catch (IOException e) {
 				log.debug("发送消息给所有人异常：", e.getStackTrace());
-				throw new ShssException(StateCodeConstant.ERROR_CODE, e.getMessage());
 			}
 		}
 	}

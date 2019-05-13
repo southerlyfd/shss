@@ -3,11 +3,13 @@ package com.jianghongbo.common.config;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.jianghongbo.common.interceptor.AuthenticationInterceptor;
 import com.jianghongbo.common.interceptor.MyLocaleResolver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -17,6 +19,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
+
+    @Value("${images.portrait}")
+    private String path;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor())
@@ -40,5 +46,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public HttpMessageConverters useConverters() {
 
         return new HttpMessageConverters(new FastJsonHttpMessageConverter());
+    }
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/images/**").addResourceLocations("file:" + path);
     }
 }

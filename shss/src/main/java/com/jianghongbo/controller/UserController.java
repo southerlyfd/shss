@@ -15,6 +15,7 @@ import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -40,6 +42,8 @@ public class UserController {
     @Autowired
     LogRecordService logRecordService;
 
+    // 头像访问路径
+    private final String path = "/images/portrait/";
 
 
     /**
@@ -86,6 +90,10 @@ public class UserController {
         if (StringUtils.isBlank(StringUtils.trim(password))) {
             throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.PASSWORD_NOT_NULL);
         }
+        // 产生10内随机数为头像
+        int number = new Random().nextInt(10) + 1;
+        String portrait = path + number + ".jpg";
+        user.setPortrait(portrait);
         JsonResult result = new JsonResult();
         userService.registerUserInfo(user);
         result.setErrMsg("注册成功");

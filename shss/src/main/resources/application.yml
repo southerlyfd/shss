@@ -42,3 +42,8 @@ logging:
   level:
     com.jianghongbo: DEBUG #包路径为mapper文件包路径
     org.springframework.boot.autoconfigure: INFO
+
+
+#图片存放路径配置
+images:
+  portrait: /root/tomcat/images/

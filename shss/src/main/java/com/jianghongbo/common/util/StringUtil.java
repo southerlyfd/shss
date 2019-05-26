@@ -29,6 +29,10 @@ public class StringUtil extends org.springframework.util.StringUtils {
         return str.length() > 0 ? false : true;
     }
 
+	public static String trimNull(String str) {
+		return isBlank(str) ? "" : str.trim();
+	}
+
     public static String getCurrentDateTime() {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");

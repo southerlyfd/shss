@@ -4,6 +4,7 @@ import com.jianghongbo.common.ServiceResult;
 import com.jianghongbo.common.consts.CommonConst;
 import com.jianghongbo.common.consts.StateCodeConstant;
 import com.jianghongbo.common.exception.ShssException;
+import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.dao.UserInfoReaderMapper;
 import com.jianghongbo.dao.UserInfoWriterMapper;
 import com.jianghongbo.entity.UserInfo;
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         for (UserInfo userInfo : userInfoList) {
-            userInfo.setPortrait(url + userInfo.getPortrait());
+            userInfo.setPortrait(url + StringUtil.trimNull(userInfo.getPortrait()));
         }
         return userInfoList;
     }
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
             log.info("userInfoList 为 null 未找到用户！");
             return null;
         }
-        userInfoList.get(0).setPortrait(url + userInfoList.get(0).getPortrait());
+        userInfoList.get(0).setPortrait(url + StringUtil.trimNull(userInfoList.get(0).getPortrait()));
         return userInfoList.get(0);
     }
 

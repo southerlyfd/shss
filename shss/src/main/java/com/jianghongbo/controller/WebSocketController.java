@@ -2,7 +2,7 @@ package com.jianghongbo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jianghongbo.common.consts.StateCodeConstant;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jianghongbo.common.util.StringUtil;
 import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
@@ -78,10 +78,9 @@ public class WebSocketController {
 				JSONObject result = new JSONObject();
 				result.put("userState", ON_LINE);
 				result.put("onlineNum", getOnlineCount());
-				result.put("userId", this.userId);
-				result.put("username", userInfo.getUsername());
+				result.put("user", userInfo);
 				result.put("userInfoList", getUserInfoList());
-				sendtoAll(JSON.toJSONString(result));
+				sendtoAll(JSON.toJSONString(result, SerializerFeature.DisableCircularReferenceDetect));
 			} catch (IOException e) {
 				log.debug("websocket异常：", e.getStackTrace());
 			}
@@ -104,10 +103,9 @@ public class WebSocketController {
 				JSONObject result = new JSONObject();
 				result.put("userState", DOWN_LINE);
 				result.put("onlineNum", getOnlineCount());
-				result.put("userId", this.userId);
-				result.put("username", userInfo.getUsername());
+				result.put("user", userInfo);
 				result.put("userInfoList", getUserInfoList());
-				sendtoAll(JSON.toJSONString(result));
+				sendtoAll(JSON.toJSONString(result, SerializerFeature.DisableCircularReferenceDetect));
 			} catch (IOException e) {
 				log.debug("发送消息异常：", e.getStackTrace());
 			}
@@ -127,15 +125,14 @@ public class WebSocketController {
 		UserInfo userInfo = userInfoMap.get(this.userId);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("userState", SEND_MESSAGE);
-		jsonObject.put("userId", this.userId);
-		jsonObject.put("username", userInfo.getUsername());
+		jsonObject.put("user", userInfo);
 		jsonObject.put("message", contentText);
 		try {
 			if(StringUtil.isBlank(toUserId)) {
 				sendtoAll(JSONObject.toJSONString(jsonObject));
 			} else {
 				jsonObject.put("toUserId", toUserId);
-				sendtoUser(JSONObject.toJSONString(jsonObject), toUserId);
+				sendtoUser(JSONObject.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect), toUserId);
 			}
 		} catch (IOException e) {
 			log.debug("发送消息异常：", e.getStackTrace());

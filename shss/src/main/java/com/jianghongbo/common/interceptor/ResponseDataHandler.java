@@ -1,6 +1,7 @@
 package com.jianghongbo.common.interceptor;
 
 import com.jianghongbo.common.JsonResult;
+import com.jianghongbo.common.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,8 +38,10 @@ public class ResponseDataHandler implements ResponseBodyAdvice {
             String msg = ((JsonResult) body).getErrMsg();
             Locale locale = LocaleContextHolder.getLocale();
             try {
-                msg =  messageSource.getMessage(msg, null, locale);
-                ((JsonResult) body).setErrMsg(msg);
+                if (!"".equals(StringUtil.trimNull(msg))) {
+                    msg =  messageSource.getMessage(msg, null, locale);
+                    ((JsonResult) body).setErrMsg(msg);
+                }
             } catch (Exception e) {
                 log.debug("国际化内容：" + msg);
             }

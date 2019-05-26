@@ -40,7 +40,8 @@ public class UserServiceImpl implements UserService {
         log.info("getUserInfo：" + user.toString());
         List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
         if (userInfoList == null || userInfoList.size() == 0) {
-            return new ArrayList<>();
+            log.info("userInfoList 为 null 未找到结果！");
+            return null;
         }
         for (UserInfo userInfo : userInfoList) {
             userInfo.setPortrait(url + userInfo.getPortrait());
@@ -53,7 +54,8 @@ public class UserServiceImpl implements UserService {
         log.info("getUserInfo：" + user.toString());
         List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
         if (userInfoList == null || userInfoList.size() == 0) {
-            throw new ShssException(StateCodeConstant.ERROR_CODE, CommonConst.USER_NOT_EXIST);
+            log.info("userInfoList 为 null 未找到用户！");
+            return null;
         }
         userInfoList.get(0).setPortrait(url + userInfoList.get(0).getPortrait());
         return userInfoList.get(0);

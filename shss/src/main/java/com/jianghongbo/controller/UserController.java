@@ -51,14 +51,15 @@ public class UserController {
      * @param userParam
      * @return
      */
-    @UserLoginToken
+//    @UserLoginToken
     @RequestMapping("/queryUserList")
     public JsonResult queryUserList(UserInfo userParam){
         JsonResult result = new JsonResult();
-        PageHelper.startPage(1, 10);
+//        PageHelper.startPage(1, 10);
         List<UserInfo> userList = userService.getUserList(userParam);
-        PageInfo<UserInfo> userPageInfo = new PageInfo<>(userList);
-        result.setData(userPageInfo);
+//        PageInfo<UserInfo> userPageInfo = new PageInfo<>(userList);
+//        result.setData(userPageInfo);
+        result.setData(userList);
         return result;
     }
 
@@ -69,6 +70,10 @@ public class UserController {
      */
     @RequestMapping("/queryUser")
     public JsonResult queryUser(UserInfo userParam){
+        String username = userParam.getUsername();
+        if (StringUtils.isBlank(StringUtils.trim(username))) {
+            throw new ShssException(StateCodeConstant.ERROR_NODATA_CODE, CommonConst.USERNAME_NOT_NULL);
+        }
     	JsonResult result = new JsonResult();
         UserInfo user = userService.getUser(userParam);
         result.setData(user);

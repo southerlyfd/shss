@@ -46,4 +46,5 @@ logging:
 
 #图片存放路径配置
 images:
+  url: http://47.98.183.208:8080
   portrait: /root/tomcat/images/

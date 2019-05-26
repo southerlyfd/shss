@@ -10,9 +10,11 @@ import com.jianghongbo.entity.UserInfo;
 import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,10 +32,20 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserInfoWriterMapper userInfoWriterMapper;
 
+    @Value("${images.url}")
+    private String url;
+
     @Override
     public List<UserInfo> getUserList(UserInfo user) {
         log.info("getUserInfo：" + user.toString());
-        return userInfoReaderMapper.getUserList(user);
+        List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
+        if (userInfoList == null || userInfoList.size() == 0) {
+            return new ArrayList<>();
+        }
+        for (UserInfo userInfo : userInfoList) {
+            userInfo.setPortrait(url + userInfo.getPortrait());
+        }
+        return userInfoList;
     }
 
     @Override
@@ -43,6 +55,7 @@ public class UserServiceImpl implements UserService {
         if (userInfoList == null || userInfoList.size() == 0) {
             throw new ShssException(StateCodeConstant.ERROR_CODE, CommonConst.USER_NOT_EXIST);
         }
+        userInfoList.get(0).setPortrait(url + userInfoList.get(0).getPortrait());
         return userInfoList.get(0);
     }
 

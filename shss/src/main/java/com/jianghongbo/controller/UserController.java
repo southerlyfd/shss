@@ -196,4 +196,9 @@ public class UserController {
         result.setErrMsg("退出成功");
         return result;
     }
+    
+    @RequestMapping("/getTest")
+    public String getTest(){
+        return "版本001";
+    }
 }

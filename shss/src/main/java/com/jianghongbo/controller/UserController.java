@@ -144,7 +144,7 @@ public class UserController {
         RecordLogger recordLogger = new RecordLogger();
         recordLogger.setUsername(username);
         recordLogger.setPassword(password);
-        logRecordService.saveRecordLogger(recordLogger);
+//        logRecordService.saveRecordLogger(recordLogger);
         result.setErrMsg(CommonConst.LOGIN_SUCCESS);
         return result;
     }

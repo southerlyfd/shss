@@ -70,9 +70,9 @@ public class WebSocketController {
 			userInfo.setId(Integer.parseInt(userId));
 			userInfo = userService.getUser(userInfo);
 			userInfoMap.put(userId, userInfo);
-			log.info("websocketList->"+ JSON.toJSONString(websocketList));
+			log.info("websocketList->[{}]", JSON.toJSONString(websocketList));
 			addOnlineCount();           //在线数加1
-			log.info("有新窗口开始监听:"+userId+",当前在线人数为" + getOnlineCount());
+			log.info("有新窗口开始监听:[{}],当前在线人数为:[{}]",userId, getOnlineCount());
 			this.userId=userId;
 			try {
 				JSONObject result = new JSONObject();
@@ -97,7 +97,7 @@ public class WebSocketController {
 			websocketList.remove(this.userId);
 			userInfoMap.remove(this.userId);
 			subOnlineCount();           //在线数减1
-			log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
+			log.info("有一连接关闭！当前在线人数为:[{}]", getOnlineCount());
 			try {
 
 				JSONObject result = new JSONObject();
@@ -119,7 +119,7 @@ public class WebSocketController {
 	@OnMessage
 	public void onMessage(String message, Session session) {
 		JSONObject messageObject = JSONObject.parseObject(message);
-		log.info("收到来自窗口" + this.userId + "的信息:" + message);
+		log.info("收到来自窗口:[{}]的信息:[{}]", this.userId, message);
 		String contentText = messageObject.getString("contentText");
 		String toUserId = messageObject.getString("toUserId");
 		UserInfo userInfo = userInfoMap.get(this.userId);

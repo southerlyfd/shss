@@ -21,7 +21,7 @@ public class LogRecordServiceImpl implements LogRecordService {
 
     @Override
     public void saveRecordLogger(RecordLogger recordLogger) {
-        log.info("日记记录：" + recordLogger.toString());
+        log.info("日记记录：[{}]", recordLogger.toString());
         mongoTemplate.save(recordLogger);
     }
 }

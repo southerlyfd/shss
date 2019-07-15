@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerUserInfo(UserInfo user) {
-        log.info("registerUserInfo：" + user.toString());
+        log.info("registerUserInfo：[{}]", user.toString());
         List<UserInfo> userInfoList = userInfoReaderMapper.getUserList(user);
         if (userInfoList != null && userInfoList.size() > 0) {
             throw new ShssException(StateCodeConstant.ERROR_CODE, CommonConst.USERNAME_IS_EXIST);
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserInfo(UserInfo user) {
-        log.info("updateUserInfo：" + user.toString());
+        log.info("updateUserInfo：[{}]", user.toString());
         userInfoWriterMapper.updateUserInfo(user);
     }
 

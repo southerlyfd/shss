@@ -199,6 +199,6 @@ public class UserController {
     
     @RequestMapping("/getTest")
     public String getTest(){
-        return "版本001";
+        return "测试版本001";
     }
 }

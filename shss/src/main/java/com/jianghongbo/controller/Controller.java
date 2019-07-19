@@ -79,7 +79,7 @@ public class Controller {
 	}
 
 	/**
-	 * 根据request取得IP 
+	 * 根据request取得IP
 	 * @param request
 	 * @return
 	 */

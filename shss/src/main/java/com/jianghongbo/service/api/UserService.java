@@ -44,4 +44,7 @@ public interface UserService {
      * @return
      */
     ServiceResult<UserInfo> getLoginInfo(String shssToken);
+
+    // 测试异步
+    void sendSms();
 }

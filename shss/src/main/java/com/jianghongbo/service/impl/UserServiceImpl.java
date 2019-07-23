@@ -12,11 +12,13 @@ import com.jianghongbo.service.api.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author ：taoyl
@@ -92,6 +94,23 @@ public class UserServiceImpl implements UserService {
 		}
 		return result;
 	}
-    
-    
+
+    /**
+     * 测试异步
+     */
+    @Async
+    @Override
+    public void sendSms() {
+        System.out.println("###IndexController###     2");
+        IntStream.range(0, 5).forEach(d -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        });
+        System.out.println("###IndexController###     3");
+    }
+
+
 }

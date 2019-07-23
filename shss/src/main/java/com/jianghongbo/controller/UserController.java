@@ -199,6 +199,13 @@ public class UserController {
     
     @RequestMapping("/getTest")
     public String getTest(){
+        System.out.println("###IndexController###     1");
+        userService.sendSms();
+        RecordLogger recordLogger = new RecordLogger();
+        recordLogger.setUsername("测试mongoDB连接001");
+        recordLogger.setPassword("测试mongoDB连接001");
+        logRecordService.saveRecordLogger(recordLogger);
+        System.out.println("###IndexController###     4");
         return "测试版本005";
     }
 }
